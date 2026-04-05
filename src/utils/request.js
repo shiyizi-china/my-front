@@ -4,65 +4,25 @@
  * 功能特性：
  * - 统一的 HTTP 请求接口
  * - 自动 Token 注入（Bearer 认证）
- * - 环境自适应（开发环境使用代理，生产环境使用绝对URL）
+ * - 相对路径请求（依赖 Vite 代理或 Vercel 重写规则）
  * - 完善的错误处理和状态码分类
  * - FormData 文件上传特殊处理
  * - 兼容 axios 风格的 API 调用方式
- * 
- * 环境配置：
- * - 开发环境：使用相对路径，依赖 Vite 代理转发
- * - 生产环境：使用绝对 URL，直接调用后端服务
  */
-
-// 获取API基础地址
-// 开发环境：空字符串（使用相对路径 + Vite代理）
-// 生产环境：https://zesty-kindness-production-c0e9.up.railway.app
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 /**
  * 构建完整的请求 URL
  * 
  * 设计理念：
- * - 开发环境：使用相对路径，依赖 Vite 代理转发
- * - 生产环境：使用绝对 URL，直接调用后端服务
- * - 支持绝对 URL 直接透传（用于外部 API 调用）
+ * - 始终使用相对路径
+ * - 开发环境：依赖 Vite 代理转发
+ * - 生产环境：依赖 Vercel 重写规则转发
  * 
- * 环境适配逻辑：
- * 1. 如果是绝对 URL（以 http 开头），直接返回
- * 2. 如果在生产环境且有 API_BASE_URL，拼接绝对 URL
- * 3. 否则使用相对路径（开发环境）
- * 
- * @param {string} url - 请求路径（相对路径或绝对URL）
- * @returns {string} 完整的请求URL
+ * @param {string} url - 请求路径（相对路径）
+ * @returns {string} 完整的请求URL（相对路径）
  */
 function buildFullURL(url) {
-  // 如果 URL 已经是完整 URL（以 http 开头），直接返回
-  if (url.startsWith('http')) {
-    return url
-  }
-  
-  // 生产环境：使用绝对 URL
-  if (API_BASE_URL) {
-    // 处理 /api/ 和 /image 路径
-    if (url.startsWith('/api/')) {
-      // /api/article -> /article
-      const path = url.replace(/^\/api/, '')
-      return `${API_BASE_URL}${path}`
-    } else if (url === '/api/login') {
-      // /api/login -> /login
-      return `${API_BASE_URL}/login`
-    } else if (url.startsWith('/image')) {
-      // /image -> /image
-      return `${API_BASE_URL}${url}`
-    } else if (url.startsWith('/api/user/avatar')) {
-      // /api/user/avatar -> /user/avatar
-      return `${API_BASE_URL}${url.replace(/^\/api/, '')}`
-    }
-    // 其他情况也使用绝对URL
-    return `${API_BASE_URL}${url}`
-  }
-  
-  // 开发环境：使用相对路径，依赖 Vite 代理配置
+  // 始终返回相对路径，依赖代理配置
   return url.startsWith('/') ? url : `/${url}`
 }
 

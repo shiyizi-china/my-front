@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/:path*"
+    },
+    {
+      "source": "/image",
+      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/image"
+    },
+    {
+      "source": "/image/:path*",
+      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/image/:path*"
+    }
+  ]
+}
