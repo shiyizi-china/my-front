@@ -10,8 +10,8 @@
  * - 兼容 axios 风格的 API 调用方式
  */
 
-// 从环境变量获取 API 基准地址
-const BASE_URL = import.meta.env.VITE_API_BASE_URL
+// 从环境变量获取 API 基准地址，如果没有设置则使用默认的生产地址
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://zesty-kindness-production-c0e9.up.railway.app'
 
 /**
  * 构建完整的请求 URL
