@@ -1,16 +1,15 @@
 {
   "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
     {
-      "source": "/api/:path*",
-      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/:path*"
-    },
-    {
-      "source": "/image",
-      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/image"
-    },
-    {
-      "source": "/image/:path*",
-      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/image/:path*"
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type,Authorization" }
+      ]
     }
   ]
 }

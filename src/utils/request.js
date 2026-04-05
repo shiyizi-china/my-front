@@ -4,7 +4,7 @@
  * 功能特性：
  * - 统一的 HTTP 请求接口
  * - 自动 Token 注入（Bearer 认证）
- * - 双环境自动切换（开发/生产，通过 VITE_API_BASE_URL 配置）
+ * - 双环境自动切换（开发/生产）
  * - 完善的错误处理和状态码分类
  * - FormData 文件上传特殊处理
  * - 兼容 axios 风格的 API 调用方式
@@ -17,8 +17,8 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL
  * 构建完整的请求 URL
  * 
  * 设计理念：
- * - 所有请求都使用绝对 URL
- * - 自动拼接环境变量中的基准地址
+ * - 所有环境都使用绝对 URL
+ * - 直接拼接环境变量中的基准地址
  * - 支持直接传入完整 URL（以 http 开头）
  * 
  * @param {string} url - 请求路径（相对路径或绝对URL）
@@ -73,7 +73,7 @@ function createHeaders(customHeaders = {}) {
  * 通用请求函数（兼容 axios 风格的配置对象）
  * 
  * 功能流程：
- * 1. 构建完整 URL（使用固定后端地址）
+ * 1. 构建完整 URL（使用环境变量基准地址）
  * 2. 创建请求头（包含 Token）
  * 3. 处理请求体数据（JSON 或 FormData）
  * 4. 发送 fetch 请求
@@ -181,7 +181,7 @@ function getRequest(url, options = {}) {
  * POST 请求便捷方法
  * 
  * 使用示例：
- * request.post('/user/login', { username: 'admin', password: '123456' })
+ * request.post('/login', { username: 'admin', password: '123456' })
  * request.post('/articles', { title: 'New Article', content: '...' })
  * 
  * @param {string} url - 请求 URL（相对路径）
@@ -237,8 +237,8 @@ function deleteRequest(url, options = {}) {
 }
 
 // 使 request 函数也包含具体方法，支持两种使用方式
-// 方式1: request({ url: '/user/login', method: 'POST', data: credentials })
-// 方式2: request.post('/user/login', credentials)
+// 方式1: request({ url: '/login', method: 'POST', data: credentials })
+// 方式2: request.post('/login', credentials)
 request.get = getRequest
 request.post = postRequest
 request.put = putRequest
