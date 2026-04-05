@@ -8,8 +8,8 @@
  * - 处理文件上传的特殊 Content-Type 要求
  * 
  * 接口规范：
- * - 上传接口：POST /image（通过 Vite 代理转发到后端 /image）
- * - 获取接口：GET /image（通过 Vite 代理转发到后端 /image）
+ * - 上传接口：POST /image（相对路径，自动适配环境）
+ * - 获取接口：GET /image（相对路径，自动适配环境）
  * - 认证要求：需要有效的 JWT Token（自动注入）
  * - 文件格式：支持常见的图片格式（jpg, png, gif 等）
  * 
@@ -22,9 +22,8 @@
 // 导入统一的请求工具
 import request from '../utils/request'
 
-// API基础URL配置
-// 直接使用 /image 路径，通过Vite代理转发到后端
-const BASE_URL = '/image'
+// API基础URL配置 - 使用相对路径
+const IMAGE_URL = '/image'
 
 /**
  * 上传图片接口
@@ -54,7 +53,7 @@ export function uploadImage(file) {
   const formData = new FormData()
   formData.append('file', file)
   return request({
-    url: BASE_URL,
+    url: IMAGE_URL,
     method: 'post',
     data: formData,
   })
@@ -87,7 +86,7 @@ export function uploadImage(file) {
  */
 export function getImageList() {
   return request({
-    url: BASE_URL,
+    url: IMAGE_URL,
     method: 'get',
   })
 }

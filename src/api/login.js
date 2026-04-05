@@ -9,7 +9,7 @@
  * 
  * 接口规范：
  * - 请求方法：POST
- * - 请求路径：/api/login（通过 Vite 代理转发到后端 /login）
+ * - 请求路径：/login（相对路径，自动适配环境）
  * - 请求体：包含 username 和 password 的对象
  * - 响应格式：标准 Result 对象 { code, data, msg }
  * 
@@ -22,11 +22,8 @@
 // 导入统一的请求工具
 import request from '@/utils/request'
 
-// API基础URL配置
-// 使用/api前缀，通过Vite代理转发到后端
-// 开发环境：/api/login → Vite代理 → http://localhost:8080/login
-// 生产环境：/api/login → 服务器代理 → https://railway.app/login
-const BASE_URL = '/api/login'
+// API路径配置 - 使用相对路径
+const LOGIN_URL = '/login'
 
 /**
  * 用户登录接口
@@ -59,7 +56,7 @@ const BASE_URL = '/api/login'
  */
 export function loginApi(data) {
   return request({
-    url: BASE_URL,
+    url: LOGIN_URL,
     method: 'post',
     data,
   })

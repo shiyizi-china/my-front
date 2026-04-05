@@ -9,7 +9,7 @@
  * 
  * 接口规范：
  * - 请求方法：POST（发布）、GET（获取列表）
- * - 请求路径：/api/article（通过 Vite 代理转发到后端 /article）
+ * - 请求路径：/article（相对路径，自动适配环境）
  * - 认证要求：需要有效的 JWT Token（自动注入）
  * - 响应格式：标准 Result 对象 { code, data, msg }
  * 
@@ -22,9 +22,8 @@
 // 导入统一的请求工具
 import request from '../utils/request'
 
-// API基础URL配置
-// 使用/api前缀，通过Vite代理转发到后端
-const BASE_URL = '/api/article'
+// API基础URL配置 - 使用相对路径
+const ARTICLE_URL = '/article'
 
 /**
  * 发布文章接口
@@ -53,7 +52,7 @@ const BASE_URL = '/api/article'
  */
 export function addArticle(data) {
   return request({
-    url: BASE_URL,
+    url: ARTICLE_URL,
     method: 'post',
     data: data
   })
@@ -81,7 +80,7 @@ export function addArticle(data) {
  */
 export function getArticleList() {
   return request({
-    url: BASE_URL,
+    url: ARTICLE_URL,
     method: 'get',
   })
 }

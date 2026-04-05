@@ -4,26 +4,37 @@
  * 功能特性：
  * - 统一的 HTTP 请求接口
  * - 自动 Token 注入（Bearer 认证）
- * - 相对路径请求（依赖 Vite 代理或 Vercel 重写规则）
+ * - 双环境自动切换（开发/生产，通过 VITE_API_BASE_URL 配置）
  * - 完善的错误处理和状态码分类
  * - FormData 文件上传特殊处理
  * - 兼容 axios 风格的 API 调用方式
  */
 
+// 从环境变量获取 API 基准地址
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 /**
  * 构建完整的请求 URL
  * 
  * 设计理念：
- * - 始终使用相对路径
- * - 开发环境：依赖 Vite 代理转发
- * - 生产环境：依赖 Vercel 重写规则转发
+ * - 所有请求都使用绝对 URL
+ * - 自动拼接环境变量中的基准地址
+ * - 支持直接传入完整 URL（以 http 开头）
  * 
- * @param {string} url - 请求路径（相对路径）
- * @returns {string} 完整的请求URL（相对路径）
+ * @param {string} url - 请求路径（相对路径或绝对URL）
+ * @returns {string} 完整的请求URL（绝对URL）
  */
 function buildFullURL(url) {
-  // 始终返回相对路径，依赖代理配置
-  return url.startsWith('/') ? url : `/${url}`
+  // 如果 URL 已经是完整 URL（以 http 开头），直接返回
+  if (url.startsWith('http')) {
+    return url
+  }
+  
+  // 确保路径以 / 开头
+  const path = url.startsWith('/') ? url : `/${url}`
+  
+  // 拼接基准地址
+  return BASE_URL + path
 }
 
 /**
@@ -62,7 +73,7 @@ function createHeaders(customHeaders = {}) {
  * 通用请求函数（兼容 axios 风格的配置对象）
  * 
  * 功能流程：
- * 1. 构建完整 URL（环境自适应）
+ * 1. 构建完整 URL（使用固定后端地址）
  * 2. 创建请求头（包含 Token）
  * 3. 处理请求体数据（JSON 或 FormData）
  * 4. 发送 fetch 请求
@@ -76,7 +87,7 @@ function createHeaders(customHeaders = {}) {
  * - 状态码分类：提供用户友好的错误消息
  * 
  * @param {Object} config - 请求配置对象
- * @param {string} config.url - 请求 URL（相对路径或绝对URL）
+ * @param {string} config.url - 请求 URL（相对路径）
  * @param {string} [config.method='GET'] - HTTP 请求方法
  * @param {Object} [config.data] - 请求数据（用于 POST/PUT/PATCH）
  * @param {Object} [config.headers] - 自定义请求头
@@ -116,6 +127,7 @@ async function request(config) {
           break
         case 403:
           errorMessage = '拒绝访问'
+          break
         case 404:
           errorMessage = '请求资源不存在'
           break
@@ -150,10 +162,10 @@ async function request(config) {
  * GET 请求便捷方法
  * 
  * 使用示例：
- * request.get('/api/users')
- * request.get('/api/users', { headers: { 'Custom-Header': 'value' } })
+ * request.get('/user/profile')
+ * request.get('/articles')
  * 
- * @param {string} url - 请求 URL
+ * @param {string} url - 请求 URL（相对路径）
  * @param {Object} options - 请求选项（headers, etc.）
  * @returns {Promise<any>} 响应数据
  */
@@ -169,10 +181,10 @@ function getRequest(url, options = {}) {
  * POST 请求便捷方法
  * 
  * 使用示例：
- * request.post('/api/users', { name: 'John' })
- * request.post('/api/users', { name: 'John' }, { headers: { 'Custom-Header': 'value' } })
+ * request.post('/user/login', { username: 'admin', password: '123456' })
+ * request.post('/articles', { title: 'New Article', content: '...' })
  * 
- * @param {string} url - 请求 URL
+ * @param {string} url - 请求 URL（相对路径）
  * @param {Object} data - 请求数据
  * @param {Object} options - 请求选项
  * @returns {Promise<any>} 响应数据
@@ -190,9 +202,9 @@ function postRequest(url, data = null, options = {}) {
  * PUT 请求便捷方法
  * 
  * 使用示例：
- * request.put('/api/users/1', { name: 'Updated John' })
+ * request.put('/user/profile', { name: 'Updated Name' })
  * 
- * @param {string} url - 请求 URL
+ * @param {string} url - 请求 URL（相对路径）
  * @param {Object} data - 请求数据
  * @param {Object} options - 请求选项
  * @returns {Promise<any>} 响应数据
@@ -210,10 +222,9 @@ function putRequest(url, data = null, options = {}) {
  * DELETE 请求便捷方法
  * 
  * 使用示例：
- * request.delete('/api/users/1')
- * request.delete('/api/users/1', { headers: { 'Custom-Header': 'value' } })
+ * request.delete('/articles/1')
  * 
- * @param {string} url - 请求 URL
+ * @param {string} url - 请求 URL（相对路径）
  * @param {Object} options - 请求选项
  * @returns {Promise<any>} 响应数据
  */
@@ -226,8 +237,8 @@ function deleteRequest(url, options = {}) {
 }
 
 // 使 request 函数也包含具体方法，支持两种使用方式
-// 方式1: request({ url: '/api/users', method: 'GET' })
-// 方式2: request.get('/api/users')
+// 方式1: request({ url: '/user/login', method: 'POST', data: credentials })
+// 方式2: request.post('/user/login', credentials)
 request.get = getRequest
 request.post = postRequest
 request.put = putRequest

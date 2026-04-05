@@ -21,9 +21,8 @@
 // 导入统一的请求工具（已修复为 fetch 客户端）
 import request from '@/utils/request'
 
-// API基础URL配置
-// 使用/api前缀，通过Vite代理转发到后端
-const BASE_URL = '/api/login' // 使用/api前缀，通过Vite代理转发到后端
+// API路径配置 - 使用相对路径
+const LOGIN_URL = '/login'
 
 /**
  * 登录凭据接口定义
@@ -96,7 +95,7 @@ export interface ApiResponse<T = any> {
  */
 export function loginApi(data: LoginCredentials): Promise<ApiResponse> {
   return request({
-    url: BASE_URL,
+    url: LOGIN_URL,
     method: 'post',
     data
   })
