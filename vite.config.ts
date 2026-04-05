@@ -16,14 +16,14 @@ export default defineConfig({
   server: {
     port: 5174,
     proxy: {
-      // 代理所有API请求到后端
+      // 代理所有API请求到本地后端（开发环境）
       '/api': {
-        target: 'https://zesty-kindness-production-c0e9.up.railway.app',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },
       '/image': {
-        target: 'https://zesty-kindness-production-c0e9.up.railway.app',
+        target: 'http://localhost:8080',
         changeOrigin: true
       }
     }
