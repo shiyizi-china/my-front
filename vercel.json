@@ -1,23 +1,49 @@
 {
   "rewrites": [
-    { "source": "/login", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/login" },
-    { "source": "/deitys/:id", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/deitys/:id" },
-    { "source": "/deitys", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/deitys" },
-    { "source": "/article/:id", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/article/:id" },
-    { "source": "/article", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/article" },
-    { "source": "/barrage", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/barrage" },
-    { "source": "/image", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/image" },
-    { "source": "/user/:path*", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/user/:path*" },
-    { "source": "/:path*", "destination": "/index.html" }
+    {
+      "source": "/login",
+      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/login"
+    },
+    {
+      "source": "/deitys/:path*",
+      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/deitys/:path*"
+    },
+    {
+      "source": "/article/:path*",
+      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/article/:path*"
+    },
+    {
+      "source": "/barrage/:path*",
+      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/barrage/:path*"
+    },
+    {
+      "source": "/image/:path*",
+      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/image/:path*"
+    },
+    {
+      "source": "/user/:path*",
+      "destination": "https://zesty-kindness-production-c0e9.up.railway.app/user/:path*"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type,Authorization,token" }
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,POST,PUT,DELETE,OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type,Authorization,token"
+        }
       ]
     }
-  ]
+  ],
+  "trailingSlash": false,
+  "cleanUrls": true
 }
