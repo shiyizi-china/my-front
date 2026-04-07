@@ -4,6 +4,11 @@ import { useAuthStore } from '@/stores/useAuthStore'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
+    // 根路径重定向到登录页
+    redirect: '/login'
+  },
+  {
+    path: '/home',
     name: 'Home',
     component: () => import('@/views/Home.vue'),
     meta: { title: '首页', showNav: true, requiresAuth: true }
@@ -25,6 +30,12 @@ const routes: RouteRecordRaw[] = [
     name: 'Login',
     component: () => import('@/views/Login.vue'),
     meta: { title: '登录', showNav: false }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/Profile.vue'),
+    meta: { title: '个人中心', requiresAuth: true }
   }
 ]
 

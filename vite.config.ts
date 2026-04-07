@@ -20,6 +20,12 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      // 添加OSS图片代理
+      '/oss': {
+        target: 'https://home-pageimage.oss-cn-guangzhou.aliyuncs.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/oss/, '')
       }
     }
   }

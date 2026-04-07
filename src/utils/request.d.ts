@@ -1,3 +1,18 @@
+import { AxiosInstance, AxiosRequestConfig } from 'axios'
+
+// 扩展 AxiosRequestConfig 添加自定义属性
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    // 是否显示加载效果，默认 true
+    showLoading?: boolean
+  }
+}
+
+// 导出 axios 实例类型
+const request: AxiosInstance
+
+export default request
+
 export interface RequestConfig {
   url: string
   method?: string

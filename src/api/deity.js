@@ -19,7 +19,7 @@
  * - 成员信息更新和删除
  */
 
-// 导入统一的请求工具
+// 导入统一的请求工具（基于 axios）
 import request from '@/utils/request'
 
 // API基础URL配置 - 使用相对路径
@@ -82,10 +82,7 @@ const DEITY_URL = '/deitys'
  * - 500: 服务器内部错误
  */
 export function getDeityList() {
-  return request({
-    url: DEITY_URL,
-    method: 'get',
-  })
+  return request.get(DEITY_URL)
 }
 
 /**
@@ -113,11 +110,7 @@ export function getDeityList() {
  * - 500: 服务器内部错误
  */
 export function addDeity(data) {
-  return request({
-    url: DEITY_URL,
-    method: 'post',
-    data,
-  })
+  return request.post(DEITY_URL, data)
 }
 
 /**
@@ -146,11 +139,7 @@ export function addDeity(data) {
  * - 500: 服务器内部错误
  */
 export function updateDeity(data) {
-  return request({
-    url: `${DEITY_URL}/${data.id}`,
-    method: 'put',
-    data,
-  })
+  return request.put(`${DEITY_URL}/${data.id}`, data)
 }
 
 /**
@@ -177,8 +166,5 @@ export function updateDeity(data) {
  * - 500: 服务器内部错误
  */
 export function deleteDeity(id) {
-  return request({
-    url: `${DEITY_URL}/${id}`,
-    method: 'delete',
-  })
+  return request.delete(`${DEITY_URL}/${id}`)
 }

@@ -1,5 +1,5 @@
 /**
- * useAuthStore.ts - 用户认证状态管理 Store
+ * useAuthStore.js - 用户认证状态管理 Store
  * 
  * 功能特性：
  * - 用户登录/登出状态管理
@@ -24,22 +24,6 @@ import { loginApi } from '@/services/auth'
 import { uploadAvatarApi } from '@/api/user'
 
 /**
- * 用户信息接口定义
- * 
- * 字段说明：
- * - username: 必填，用户账号名
- * - name: 可选，用户显示名称
- * - id: 可选，用户唯一标识
- * - avatar: 可选，用户头像URL
- */
-interface UserInfo {
-  username: string
-  name?: string
-  id?: number
-  avatar?: string
-}
-
-/**
  * 从JWT Token解析用户名的辅助函数
  * 
  * JWT Token 结构：header.payload.signature
@@ -55,8 +39,8 @@ interface UserInfo {
  * - 处理各种异常情况避免崩溃
  * - 支持多种用户名字段（username/sub）
  * 
- * @param token JWT Token 字符串
- * @returns 解析出的用户名，失败时返回 null
+ * @param {string} token JWT Token 字符串
+ * @returns {string|null} 解析出的用户名，失败时返回 null
  */
 function parseUsernameFromToken(token) {
   if (!token) return null
@@ -95,7 +79,7 @@ export const useAuthStore = defineStore('auth', () => {
    * - 响应式更新
    * - 登录/登出时同步更新
    */
-  const token = ref<string | null>(localStorage.getItem('token'))
+  const token = ref(localStorage.getItem('token'))
   
   // 从localStorage恢复用户信息
   const savedUserInfo = localStorage.getItem('user-info')
@@ -124,7 +108,7 @@ export const useAuthStore = defineStore('auth', () => {
    * - 支持从 localStorage 或 Token Payload 恢复
    * - 响应式更新
    */
-  const userInfo = ref<UserInfo | null>(initialUserInfo)
+  const userInfo = ref(initialUserInfo)
   
   /**
    * 加载状态
@@ -190,10 +174,10 @@ export const useAuthStore = defineStore('auth', () => {
    * - 验证Token有效性
    * - 提供用户友好的错误消息
    * 
-   * @param credentials 登录凭据对象 { username, password }
-   * @returns Promise<{ success: boolean, message: string }>
+   * @param {Object} credentials 登录凭据对象 { username, password }
+   * @returns {Promise<Object>} { success: boolean, message: string }
    */
-  const login = async (credentials: { username: string; password: string }) => {
+  const login = async (credentials) => {
     try {
       console.log('Login called with credentials:', credentials)
       isLoading.value = true
@@ -201,23 +185,25 @@ export const useAuthStore = defineStore('auth', () => {
       
       console.log('Login API response:', response)
       
-      if (response.code === 1) {
-        const userData = response.data?.data || response.data
+      // 根据实际后端响应格式调整判断逻辑
+      // 后端直接返回 { id, username, token }，而不是 { code: 1, data: {...} }
+      if (response && response.token) {
+        const userData = response
         console.log('Extracted userData:', userData)
-        const newToken = userData?.token
-        
+        const newToken = userData.token
+      
         if (!newToken) {
           throw new Error('登录成功但未获取到有效token')
         }
-        
+      
         token.value = newToken
         localStorage.setItem('token', newToken)
         // 设置用户信息 - 支持name字段
         userInfo.value = {
-          username: credentials.username,
-          name: userData?.name || userData?.username || credentials.username,
-          id: userData?.id,
-          avatar: userData?.avatar
+          username: userData.username || credentials.username,
+          name: userData.name || userData.username || credentials.username,
+          id: userData.id,
+          avatar: userData.avatar
         }
         console.log('Set userInfo:', userInfo.value)
         // 保存到localStorage
@@ -225,7 +211,7 @@ export const useAuthStore = defineStore('auth', () => {
         return { success: true, message: '登录成功' }
       } else {
         console.error('Login failed with response:', response)
-        return { success: false, message: response.msg || '登录失败' }
+        return { success: false, message: '登录失败：无效的响应格式' }
       }
     } catch (error) {
       console.error('Login error:', error)
@@ -262,9 +248,9 @@ export const useAuthStore = defineStore('auth', () => {
    * - 如果没有用户信息，尝试从新Token解析
    * - 用于Token刷新或外部设置场景
    * 
-   * @param newToken 新的JWT Token
+   * @param {string} newToken 新的JWT Token
    */
-  const setToken = (newToken: string) => {
+  const setToken = (newToken) => {
     token.value = newToken
     localStorage.setItem('token', newToken)
     
@@ -291,7 +277,7 @@ export const useAuthStore = defineStore('auth', () => {
    * - 更新用户信息状态
    * - 处理头像、权限等额外字段
    * 
-   * @returns Promise<{ success: boolean }>
+   * @returns {Promise<Object>} { success: boolean }
    */
   const fetchUserInfo = async () => {
     // 如果需要获取用户详细信息，可以在这里实现
@@ -315,10 +301,10 @@ export const useAuthStore = defineStore('auth', () => {
    * - 详细的错误分类和提示
    * - 本地模拟更新（后端未完全实现时）
    * 
-   * @param file 要上传的头像文件
-   * @returns Promise<{ success: boolean, message: string }>
+   * @param {File} file 要上传的头像文件
+   * @returns {Promise<Object>} { success: boolean, message: string }
    */
-  const uploadAvatar = async (file: File) => {
+  const uploadAvatar = async (file) => {
     try {
       console.log('开始上传头像文件:', file.name, file.size, file.type)
       console.log('当前用户信息:', userInfo.value)
@@ -374,7 +360,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('user-info', JSON.stringify(userInfo.value))
       }
       return { success: true, message: '头像上传成功' }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Upload avatar error:', error)
       console.error('Error message:', error.message)
       // 特别检查错误类型

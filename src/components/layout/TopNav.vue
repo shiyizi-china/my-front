@@ -12,7 +12,7 @@
         :default-active="activeRoute"
         class="top-nav-menu"
       >
-        <el-menu-item index="/">首页</el-menu-item>
+        <el-menu-item index="/home">首页</el-menu-item>
         <el-menu-item index="/deity">无量空处</el-menu-item>
         <el-menu-item index="/barrage">来这里发癫</el-menu-item>
       </el-menu>

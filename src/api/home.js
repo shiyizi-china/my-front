@@ -19,8 +19,8 @@
  * - 文件大小和类型验证（后端实现）
  */
 
-// 导入统一的请求工具
-import request from '../utils/request'
+// 导入统一的请求工具（基于 axios）
+import request from '@/utils/request'
 
 // API基础URL配置 - 使用相对路径
 const IMAGE_URL = '/image'
@@ -52,11 +52,7 @@ const IMAGE_URL = '/image'
 export function uploadImage(file) {
   const formData = new FormData()
   formData.append('file', file)
-  return request({
-    url: IMAGE_URL,
-    method: 'post',
-    data: formData,
-  })
+  return request.post(IMAGE_URL, formData)
 }
 
 /**
@@ -85,8 +81,5 @@ export function uploadImage(file) {
  * - 500: 服务器内部错误
  */
 export function getImageList() {
-  return request({
-    url: IMAGE_URL,
-    method: 'get',
-  })
+  return request.get(IMAGE_URL)
 }

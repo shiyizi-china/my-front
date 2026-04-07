@@ -74,10 +74,18 @@ onMounted(async () => {
 const loadImageList = async () => {
   try {
     const res = await getImageList()
-    if (res.code === 1) {
-      imageList.value = res.data.filter(item => item.fileUrl)
+    console.log('图片列表API响应:', res)
+    // 后端直接返回数组，而不是 { code, data } 包装
+    if (Array.isArray(res)) {
+      imageList.value = res.filter(item => item.fileUrl)
+    } else {
+      console.log('图片列表API返回非数组格式:', res)
+      imageList.value = []
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error("图片加载失败:", error)
+    imageList.value = []
+  }
 }
 
 const imageTitle = ref('Every cloud has a silver lining.')
@@ -90,11 +98,15 @@ const customUpload = async (fileObj) => {
   }
   try {
     const res = await uploadImage(fileObj.file)
-    if (res.code === 1) {
+    // 后端直接返回上传的图片对象，而不是 { code, data } 包装
+    if (res && res.fileUrl) {
       ElMessage.success('上传成功')
       loadImageList()
+    } else {
+      ElMessage.error('上传失败：' + (res?.msg || '未知错误'))
     }
   } catch (error) {
+    console.error('上传图片失败:', error)
     ElMessage.error('上传失败')
   }
 }
@@ -147,17 +159,23 @@ const loadCurrentUser = () => {
 const loadArticles = async () => {
   try {
     const res = await getArticleList()
-    if (res && res.code === 1) {
+    console.log('文章列表API响应:', res)
+    // 后端直接返回数组，而不是 { code, data } 包装
+    if (Array.isArray(res)) {
       // 按创建时间倒序排序（最晚创建的放在最上方）
-      const sortedArticles = [...res.data].sort((a, b) => {
+      const sortedArticles = [...res].sort((a, b) => {
         const timeA = new Date(a.createTime).getTime()
         const timeB = new Date(b.createTime).getTime()
         return timeB - timeA // 倒序：最新的在前面
       })
       articleList.value = sortedArticles
+    } else {
+      console.log('文章列表API返回非数组格式:', res)
+      articleList.value = []
     }
   } catch (e) {
-    console.log("文章加载失败（忽略即可）")
+    console.error("文章加载失败:", e)
+    articleList.value = []
   }
 }
 
@@ -180,13 +198,17 @@ const publishArticle = async () => {
       username: currentUserName.value // 使用获取到的真实姓名
     })
 
-    if (res.code === 1) {
+    // 后端直接返回创建的文章对象，而不是 { code, data } 包装
+    if (res && res.id) {
       ElMessage.success('发布成功')
       articleTitle.value = ''
       articleContent.value = ''
       loadArticles()
+    } else {
+      ElMessage.error('发布失败：' + (res?.msg || '未知错误'))
     }
   } catch (error) {
+    console.error('发布文章失败:', error)
     ElMessage.error('发布失败，请检查后端是否启动')
   }
 }

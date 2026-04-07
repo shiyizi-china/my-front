@@ -159,7 +159,8 @@ const loadCurrentUser = () => {
 const loadBarrage = async () => {
   try {
     const res = await getBarrageList()
-    const list = res.data || []
+    // 后端直接返回数组，而不是 { code, data } 包装
+    const list = Array.isArray(res) ? res : []
     
     // 按创建时间排序（最新的在前面）
     const sortedList = list.sort((a, b) => {
@@ -188,7 +189,8 @@ const loadBarrage = async () => {
     })
     barrageList.value = newList
   } catch (e) {
-    console.log('加载弹幕失败')
+    console.error('加载弹幕失败:', e)
+    barrageList.value = []
   }
 }
 
@@ -219,7 +221,8 @@ const send = async () => {
     
     const res = await sendBarrage(payload)
 
-    if (res.code === 1) {
+    // 后端直接返回创建的弹幕对象，而不是 { code, data } 包装
+    if (res && res.id) {
       ElMessage.success('发送成功！')
       content.value = '' // 清空输入框
       loadBarrage() // 立即刷新弹幕

@@ -3,7 +3,6 @@
  * 
  * 功能说明：
  * - 封装用户登录接口调用
- * - 提供类型安全的参数和响应定义
  * - 集成统一的请求工具
  * - 支持标准的 Promise 异常处理
  * 
@@ -19,7 +18,7 @@
  *   .catch(error => console.error(error))
  */
 
-// 导入统一的请求工具
+// 导入统一的请求工具（基于 axios）
 import request from '@/utils/request'
 
 // API路径配置 - 使用相对路径
@@ -55,9 +54,6 @@ const LOGIN_URL = '/login'
  * })
  */
 export function loginApi(data) {
-  return request({
-    url: LOGIN_URL,
-    method: 'post',
-    data,
-  })
+  // 登录请求不需要显示加载效果，避免闪烁
+  return request.post(LOGIN_URL, data, { showLoading: false })
 }

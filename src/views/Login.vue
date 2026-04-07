@@ -206,7 +206,7 @@ const form = ref<LoginForm>({
  * 
  * 路由重定向：
  * - 支持从其他页面跳转过来的重定向场景
- * - 默认重定向到首页 ('/')
+ * - 默认重定向到首页 ('/home')
  */
 const handleLogin = async () => {
   try {
@@ -218,14 +218,14 @@ const handleLogin = async () => {
     
     if (result.success) {
       // 登录成功：显示成功消息
-      ElMessage.success(result.message)
       
       // 获取重定向路径（如果有）
       // 通常用于用户访问受保护页面时被重定向到登录页的场景
-      const redirectPath = route.query.redirect as string || '/'
+      const redirectPath = route.query.redirect as string || '/home'
       
       // 导航到目标页面
       await router.push(redirectPath)
+      ElMessage.success(result.message)
     } else {
       // 登录失败：显示错误消息
       ElMessage.error(result.message)

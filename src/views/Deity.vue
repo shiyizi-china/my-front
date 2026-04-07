@@ -100,8 +100,9 @@ const fetchMemberList = async () => {
   loading.value = true
   try {
     const json = await getDeityList()
-    if (json.code === 1 && Array.isArray(json.data)) {
-      tableData.value = json.data
+    // 后端直接返回数组，而不是 { code, data } 包装
+    if (Array.isArray(json)) {
+      tableData.value = json
     } else {
       tableData.value = []
       ElMessage.error('数据格式错误')
@@ -136,12 +137,13 @@ const handleOpenEditDialog = (member) => {
 const handleAddMember = async (formData) => {
   try {
     const json = await addDeity(formData)
-    if (json.code === 1) {
+    // 后端直接返回创建的对象，而不是 { code, data } 包装
+    if (json && json.id) {
       ElMessage.success('新增成功')
       addDialogVisible.value = false
       await fetchMemberList()
     } else {
-      ElMessage.error(json.msg || '新增失败')
+      ElMessage.error(json?.msg || '新增失败')
     }
   } catch (e) {
     console.error('新增成员失败:', e)
@@ -155,12 +157,13 @@ const handleAddMember = async (formData) => {
 const handleUpdateMember = async (formData) => {
   try {
     const json = await updateDeity(formData)
-    if (json.code === 1) {
+    // 后端直接返回更新的对象，而不是 { code, data } 包装
+    if (json && json.id) {
       ElMessage.success('编辑成功')
       editDialogVisible.value = false
       await fetchMemberList()
     } else {
-      ElMessage.error(json.msg || '编辑失败')
+      ElMessage.error(json?.msg || '编辑失败')
     }
   } catch (e) {
     console.error('更新成员失败:', e)
@@ -184,11 +187,12 @@ const handleDeleteMember = async (member) => {
     )
     
     const json = await deleteDeity(member.id)
-    if (json.code === 1) {
+    // 后端可能直接返回成功消息或空对象，检查是否有 msg 或其他字段
+    if (json && (json.msg || json.success || typeof json === 'object')) {
       ElMessage.success('删除成功')
       await fetchMemberList()
     } else {
-      ElMessage.error(json.msg || '删除失败')
+      ElMessage.error(json?.msg || '删除失败')
     }
   } catch (error) {
     // 用户取消删除时不显示错误

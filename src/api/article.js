@@ -19,8 +19,8 @@
  * - 文章内容管理
  */
 
-// 导入统一的请求工具
-import request from '../utils/request'
+// 导入统一的请求工具（基于 axios）
+import request from '@/utils/request'
 
 // API基础URL配置 - 使用相对路径
 const ARTICLE_URL = '/article'
@@ -51,11 +51,7 @@ const ARTICLE_URL = '/article'
  * - 500: 服务器内部错误
  */
 export function addArticle(data) {
-  return request({
-    url: ARTICLE_URL,
-    method: 'post',
-    data: data
-  })
+  return request.post(ARTICLE_URL, data)
 }
 
 /**
@@ -79,8 +75,5 @@ export function addArticle(data) {
  * - Token 自动注入到请求头
  */
 export function getArticleList() {
-  return request({
-    url: ARTICLE_URL,
-    method: 'get',
-  })
+  return request.get(ARTICLE_URL)
 }
