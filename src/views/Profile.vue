@@ -3,12 +3,12 @@
     <div class="profile-card">
       <div class="avatar" @click="triggerFileInput">
         <img :src="userAvatar" alt="头像" />
-        <input 
-          ref="fileInput" 
-          type="file" 
-          accept="image/*" 
-          @change="handleFileChange" 
-          style="display: none;"
+        <input
+          ref="fileInput"
+          type="file"
+          accept="image/*"
+          @change="handleFileChange"
+          style="display: none"
         />
         <div class="upload-tip">点击上传头像</div>
       </div>
@@ -25,7 +25,7 @@
         <span>状态：</span>
         <span class="status">已登录</span>
       </div>
-      <el-button type="primary" @click="$router.back()" style="margin-top:20px">
+      <el-button type="primary" @click="$router.back()" style="margin-top: 20px">
         返回上一页
       </el-button>
     </div>
@@ -70,21 +70,21 @@ const triggerFileInput = () => {
 const handleFileChange = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
-  
+
   if (!file) return
-  
+
   // 验证文件类型
   if (!file.type.startsWith('image/')) {
     ElMessage.error('请选择图片文件')
     return
   }
-  
+
   // 验证文件大小（限制5MB）
   if (file.size > 5 * 1024 * 1024) {
     ElMessage.error('图片大小不能超过5MB')
     return
   }
-  
+
   try {
     console.log('开始处理文件上传:', file.name)
     const result = await authStore.uploadAvatar(file)
@@ -120,7 +120,7 @@ const handleFileChange = async (event: Event) => {
 .profile-card {
   width: 400px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   padding: 40px;
   text-align: center;
@@ -160,7 +160,7 @@ const handleFileChange = async (event: Event) => {
   display: flex;
   justify-content: space-between;
   padding: 12px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .status {
   color: #67c23a;

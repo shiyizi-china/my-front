@@ -1,5 +1,11 @@
 {
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/api/$1" },
+    { "source": "/login", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/login" },
+    { "source": "/user/(.*)", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/user/$1" },
+    { "source": "/deity/(.*)", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/deity/$1" },
+    { "source": "/barrage/(.*)", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/barrage/$1" },
+    { "source": "/article/(.*)", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/article/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

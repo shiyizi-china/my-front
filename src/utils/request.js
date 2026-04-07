@@ -26,7 +26,7 @@ let loadingInstance = null
 // 获取 API 基础 URL
 function getBaseURL() {
   if (!import.meta.env.VITE_API_BASE_URL) {
-    return '/api'
+    return '' // 开发环境使用相对路径
   }
   return import.meta.env.VITE_API_BASE_URL || 'https://zesty-kindness-production-c0e9.up.railway.app'
 }
@@ -57,7 +57,8 @@ service.interceptors.request.use(
     }
     const token = localStorage.getItem('token')
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      // 使用 token 头部，匹配后端配置
+      config.headers.token = token
     }
     return config
   },
@@ -74,6 +75,10 @@ service.interceptors.response.use(
   response => {
     hideLoading()
     const res = response.data
+    // 根据项目规范，如果后端返回了特定的 code 结构，可以在这里处理
+    // 这里假设如果存在 code 且不为成功状态则报错，否则直接返回数据
+    // 注意：原 fetch 版本并未强制检查 code，此处根据提供的 axios 参考方案保留了 code 检查逻辑
+    // 如果您的后端直接返回数据而不包装 code，请调整此逻辑直接 return res
     if (res.code === 1 || res.code === 200) {
       return res.data
     } else if (res.code === 401) {
@@ -81,6 +86,11 @@ service.interceptors.response.use(
       window.location.href = '/login'
       return Promise.reject(new Error(res.msg || '未授权'))
     } else {
+      // 如果没有 code 字段，或者 code 表示成功但未命中上面条件，可能需要直接返回 res
+      // 这里为了兼容性，如果 res 没有 code 字段，通常视为直接返回业务数据
+      if (res.code === undefined) {
+         return res
+      }
       ElMessage.error(res.msg || '请求失败')
       return Promise.reject(new Error(res.msg || '请求失败'))
     }
@@ -93,6 +103,9 @@ service.interceptors.response.use(
       switch (status) {
         case 401:
           message = '未授权，请重新登录'
+          // 清除token并跳转到登录页
+          localStorage.removeItem('token')
+          localStorage.removeItem('user-info')
           window.location.href = '/login'
           break
         case 403:
