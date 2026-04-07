@@ -33,10 +33,11 @@
       <!-- 
         使用 Element Plus 的表单组件
         - label-width="0" 隐藏标签（因为使用了 placeholder）
+        - @submit.prevent 阻止默认表单提交行为并调用handleLogin
         - 包含用户名和密码两个输入字段
         - 底部包含登录按钮
       -->
-      <el-form :model="form" label-width="0" class="login-form">
+      <el-form :model="form" label-width="0" class="login-form" @submit.prevent="handleLogin">
         <!-- 用户名输入框 -->
         <el-form-item prop="username">
           <el-input
@@ -80,7 +81,7 @@
             type="primary"
             size="large"
             class="login-btn"
-            @click="handleLogin"
+            native-type="submit"
             :loading="loading"
           >
             登 录 系 统
@@ -94,7 +95,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 /**
  * Login.vue - 用户登录页面组件
  * 
@@ -162,18 +163,6 @@ const route = useRoute()
  */
 const authStore = useAuthStore()
 
-// === 类型定义 ===
-
-/**
- * 登录表单数据结构
- * - 定义用户名和密码字段的类型约束
- * - 确保类型安全的表单操作
- */
-interface LoginForm {
-  username: string
-  password: string
-}
-
 // === 响应式数据 ===
 
 /**
@@ -181,7 +170,7 @@ interface LoginForm {
  * - 使用 ref 包装以支持响应式更新
  * - 初始化为空字符串
  */
-const form = ref<LoginForm>({
+const form = ref({
   username: '',
   password: ''
 })
@@ -221,7 +210,7 @@ const handleLogin = async () => {
       
       // 获取重定向路径（如果有）
       // 通常用于用户访问受保护页面时被重定向到登录页的场景
-      const redirectPath = route.query.redirect as string || '/home'
+      const redirectPath = route.query.redirect || '/home'
       
       // 导航到目标页面
       await router.push(redirectPath)

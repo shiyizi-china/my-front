@@ -6,6 +6,7 @@
     { "source": "/article/:id", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/article/:id" },
     { "source": "/article", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/article" },
     { "source": "/barrage", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/barrage" },
+    { "source": "/image", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/image" },
     { "source": "/user/:path*", "destination": "https://zesty-kindness-production-c0e9.up.railway.app/user/:path*" },
     { "source": "/:path*", "destination": "/index.html" }
   ],

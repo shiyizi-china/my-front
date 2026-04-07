@@ -5,7 +5,7 @@ import request from '@/utils/request'
  * @returns {Promise<Object>} 用户信息对象
  */
 export function getUserInfoApi() {
-  return request.get('/users/me')
+  return request.get('/user/me')
 }
 
 /**
@@ -14,5 +14,6 @@ export function getUserInfoApi() {
  * @returns {Promise<Object>} 上传结果对象
  */
 export function uploadAvatarApi(formData) {
+  // 使用专用的 /user/avatar 接口
   return request.post('/user/avatar', formData)
 }

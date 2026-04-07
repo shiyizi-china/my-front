@@ -186,9 +186,13 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('Login API response:', response)
       
       // 根据实际后端响应格式调整判断逻辑
-      // 后端直接返回 { id, username, token }，而不是 { code: 1, data: {...} }
-      if (response && response.token) {
-        const userData = response
+      // 使用 hasOwnProperty 确保属性存在，避免 Proxy 对象问题
+      const hasToken = response && typeof response === 'object' && 'token' in response;
+      const hasId = response && typeof response === 'object' && 'id' in response;
+      const hasUsername = response && typeof response === 'object' && 'username' in response;
+      
+      if (hasToken && hasId && hasUsername) {
+        const userData = response; // 直接使用响应数据
         console.log('Extracted userData:', userData)
         const newToken = userData.token
       
@@ -342,24 +346,42 @@ export const useAuthStore = defineStore('auth', () => {
       const formData = new FormData()
       formData.append('file', file) // 后端期望的字段名是 'file'
       
-      // 使用统一的API客户端
+      // 使用统一的API客户端 - 现在使用 /user/avatar 接口
       console.log('准备发送请求到 /user/avatar')
       const response = await uploadAvatarApi(formData)
       
       console.log('上传响应:', response)
       
-      // 上传成功后，重新获取用户信息以更新头像
-      // 由于后端没有提供获取用户信息的接口，这里模拟更新
-      // 实际上，您需要在后端实现获取用户信息的接口
-      if (userInfo.value) {
-        // 假设后端保存了头像路径，我们可以构造一个临时URL
-        // 在实际应用中，应该调用获取用户信息的API
-        const timestamp = Date.now()
-        userInfo.value.avatar = `/uploads/${timestamp}.jpg`
-        // 更新localStorage
-        localStorage.setItem('user-info', JSON.stringify(userInfo.value))
+      // 处理 /user/avatar 接口的响应
+      // 根据实际响应格式调整判断逻辑：
+      // - 如果返回的是字符串URL，说明上传成功
+      // - 如果返回的是对象且包含code字段，按Result格式处理
+      if (typeof response === 'string' && response.startsWith('http')) {
+        // 直接返回URL字符串的情况（通过request.js处理后的结果）
+        const avatarUrl = response;
+        // 更新用户头像信息
+        if (userInfo.value) {
+          userInfo.value.avatar = avatarUrl;
+          localStorage.setItem('user-info', JSON.stringify(userInfo.value));
+        }
+        return { success: true, message: '头像上传成功' };
+      } else if (response && typeof response === 'object') {
+        // Result包装格式的情况
+        if (response.code === 1 && response.data) {
+          const avatarUrl = response.data;
+          if (userInfo.value) {
+            userInfo.value.avatar = avatarUrl;
+            localStorage.setItem('user-info', JSON.stringify(userInfo.value));
+          }
+          return { success: true, message: '头像上传成功' };
+        } else {
+          console.error('头像上传失败，响应格式:', response);
+          return { success: false, message: response.msg || '上传失败' };
+        }
+      } else {
+        console.error('头像上传失败，响应格式:', response);
+        return { success: false, message: '上传失败：无效的响应格式' };
       }
-      return { success: true, message: '头像上传成功' }
     } catch (error) {
       console.error('Upload avatar error:', error)
       console.error('Error message:', error.message)

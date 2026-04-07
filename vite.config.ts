@@ -16,10 +16,11 @@ export default defineConfig({
     port: 5179,
     // 开发环境代理配置 - 解决CORS问题
     proxy: {
-      '/api': {
+      // 使用更简洁的通配符代理所有API
+      '^/(login|deitys|article|barrage|image|user)': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        rewrite: (path) => path
       },
       // 添加OSS图片代理
       '/oss': {
