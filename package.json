@@ -8,8 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "format": "prettier --write --experimental-cli src/",
-    "lint": "eslint --ext .ts,.vue,.js src/",
-    "lint:fix": "eslint --ext .ts,.vue,.js src/ --fix"
+    "lint": "eslint --ext .vue,.js src/",
+    "lint:fix": "eslint --ext .vue,.js src/ --fix"
   },
   "dependencies": {
     "axios": "^1.14.0",
@@ -23,17 +23,12 @@
     "@babel/eslint-parser": "^7.28.6",
     "@babel/preset-env": "^7.29.2",
     "@types/node": "^22.0.0",
-    "@types/vue-router": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-vue": "^6.0.5",
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.28.0",
     "prettier": "3.8.1",
     "terser": "^5.46.1",
-    "typescript": "^6.0.2",
-    "vite": "^8.0.3",
-    "vue-tsc": "^3.2.6"
+    "vite": "^8.0.3"
   },
   "engines": {
     "node": ">=18.0.0"

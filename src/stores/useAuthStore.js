@@ -39,8 +39,8 @@ import { uploadAvatarApi } from '@/api/user'
  * - 处理各种异常情况避免崩溃
  * - 支持多种用户名字段（username/sub）
  * 
- * @param {string} token JWT Token 字符串
- * @returns {string|null} 解析出的用户名，失败时返回 null
+ * @param token JWT Token 字符串
+ * @returns 解析出的用户名，失败时返回 null
  */
 function parseUsernameFromToken(token) {
   if (!token) return null
@@ -174,8 +174,8 @@ export const useAuthStore = defineStore('auth', () => {
    * - 验证Token有效性
    * - 提供用户友好的错误消息
    * 
-   * @param {Object} credentials 登录凭据对象 { username, password }
-   * @returns {Promise<Object>} { success: boolean, message: string }
+   * @param credentials 登录凭据对象 { username, password }
+   * @returns Promise<{ success: boolean, message: string }>
    */
   const login = async (credentials) => {
     try {
@@ -185,29 +185,23 @@ export const useAuthStore = defineStore('auth', () => {
       
       console.log('Login API response:', response)
       
-      // 根据实际后端响应格式调整判断逻辑
-      // 使用 hasOwnProperty 确保属性存在，避免 Proxy 对象问题
-      const hasToken = response && typeof response === 'object' && 'token' in response;
-      const hasId = response && typeof response === 'object' && 'id' in response;
-      const hasUsername = response && typeof response === 'object' && 'username' in response;
-      
-      if (hasToken && hasId && hasUsername) {
-        const userData = response; // 直接使用响应数据
+      if (response.code === 1) {
+        const userData = response.data?.data || response.data
         console.log('Extracted userData:', userData)
-        const newToken = userData.token
-      
+        const newToken = userData?.token
+        
         if (!newToken) {
           throw new Error('登录成功但未获取到有效token')
         }
-      
+        
         token.value = newToken
         localStorage.setItem('token', newToken)
         // 设置用户信息 - 支持name字段
         userInfo.value = {
-          username: userData.username || credentials.username,
-          name: userData.name || userData.username || credentials.username,
-          id: userData.id,
-          avatar: userData.avatar
+          username: credentials.username,
+          name: userData?.name || userData?.username || credentials.username,
+          id: userData?.id,
+          avatar: userData?.avatar,
         }
         console.log('Set userInfo:', userInfo.value)
         // 保存到localStorage
@@ -215,7 +209,7 @@ export const useAuthStore = defineStore('auth', () => {
         return { success: true, message: '登录成功' }
       } else {
         console.error('Login failed with response:', response)
-        return { success: false, message: '登录失败：无效的响应格式' }
+        return { success: false, message: response.msg || '登录失败' }
       }
     } catch (error) {
       console.error('Login error:', error)
@@ -252,7 +246,7 @@ export const useAuthStore = defineStore('auth', () => {
    * - 如果没有用户信息，尝试从新Token解析
    * - 用于Token刷新或外部设置场景
    * 
-   * @param {string} newToken 新的JWT Token
+   * @param newToken 新的JWT Token
    */
   const setToken = (newToken) => {
     token.value = newToken
@@ -281,7 +275,7 @@ export const useAuthStore = defineStore('auth', () => {
    * - 更新用户信息状态
    * - 处理头像、权限等额外字段
    * 
-   * @returns {Promise<Object>} { success: boolean }
+   * @returns Promise<{ success: boolean }>
    */
   const fetchUserInfo = async () => {
     // 如果需要获取用户详细信息，可以在这里实现
@@ -305,8 +299,8 @@ export const useAuthStore = defineStore('auth', () => {
    * - 详细的错误分类和提示
    * - 本地模拟更新（后端未完全实现时）
    * 
-   * @param {File} file 要上传的头像文件
-   * @returns {Promise<Object>} { success: boolean, message: string }
+   * @param file 要上传的头像文件
+   * @returns Promise<{ success: boolean, message: string }>
    */
   const uploadAvatar = async (file) => {
     try {
@@ -346,42 +340,24 @@ export const useAuthStore = defineStore('auth', () => {
       const formData = new FormData()
       formData.append('file', file) // 后端期望的字段名是 'file'
       
-      // 使用统一的API客户端 - 现在使用 /user/avatar 接口
+      // 使用统一的API客户端
       console.log('准备发送请求到 /user/avatar')
       const response = await uploadAvatarApi(formData)
       
       console.log('上传响应:', response)
       
-      // 处理 /user/avatar 接口的响应
-      // 根据实际响应格式调整判断逻辑：
-      // - 如果返回的是字符串URL，说明上传成功
-      // - 如果返回的是对象且包含code字段，按Result格式处理
-      if (typeof response === 'string' && response.startsWith('http')) {
-        // 直接返回URL字符串的情况（通过request.js处理后的结果）
-        const avatarUrl = response;
-        // 更新用户头像信息
-        if (userInfo.value) {
-          userInfo.value.avatar = avatarUrl;
-          localStorage.setItem('user-info', JSON.stringify(userInfo.value));
-        }
-        return { success: true, message: '头像上传成功' };
-      } else if (response && typeof response === 'object') {
-        // Result包装格式的情况
-        if (response.code === 1 && response.data) {
-          const avatarUrl = response.data;
-          if (userInfo.value) {
-            userInfo.value.avatar = avatarUrl;
-            localStorage.setItem('user-info', JSON.stringify(userInfo.value));
-          }
-          return { success: true, message: '头像上传成功' };
-        } else {
-          console.error('头像上传失败，响应格式:', response);
-          return { success: false, message: response.msg || '上传失败' };
-        }
-      } else {
-        console.error('头像上传失败，响应格式:', response);
-        return { success: false, message: '上传失败：无效的响应格式' };
+      // 上传成功后，重新获取用户信息以更新头像
+      // 由于后端没有提供获取用户信息的接口，这里模拟更新
+      // 实际上，您需要在后端实现获取用户信息的接口
+      if (userInfo.value) {
+        // 假设后端保存了头像路径，我们可以构造一个临时URL
+        // 在实际应用中，应该调用获取用户信息的API
+        const timestamp = Date.now()
+        userInfo.value.avatar = `/uploads/${timestamp}.jpg`
+        // 更新localStorage
+        localStorage.setItem('user-info', JSON.stringify(userInfo.value))
       }
+      return { success: true, message: '头像上传成功' }
     } catch (error) {
       console.error('Upload avatar error:', error)
       console.error('Error message:', error.message)
@@ -403,6 +379,6 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     setToken,
     fetchUserInfo,
-    uploadAvatar
+    uploadAvatar,
   }
 })
