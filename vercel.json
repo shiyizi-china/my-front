@@ -23,6 +23,10 @@
     {
       "source": "/user/:path*",
       "destination": "https://zesty-kindness-production-c0e9.up.railway.app/user/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
