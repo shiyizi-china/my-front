@@ -22,7 +22,6 @@
     "@babel/core": "^7.29.0",
     "@babel/eslint-parser": "^7.28.6",
     "@babel/preset-env": "^7.29.2",
-    "@types/node": "^22.0.0",
     "@vitejs/plugin-vue": "^6.0.5",
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.28.0",

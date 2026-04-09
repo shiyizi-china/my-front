@@ -172,7 +172,7 @@ const authStore = useAuthStore()
  */
 const form = ref({
   username: '',
-  password: ''
+  password: '',
 })
 
 // === 方法定义 ===

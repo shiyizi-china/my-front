@@ -32,14 +32,14 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { ElMessage } from 'element-plus'
 
 const authStore = useAuthStore()
 const userInfo = computed(() => authStore.userInfo)
-const fileInput = ref<HTMLInputElement | null>(null)
+const fileInput = ref(null)
 
 // 计算用户头像URL
 const userAvatar = computed(() => {
@@ -67,8 +67,8 @@ const triggerFileInput = () => {
 }
 
 // 处理文件选择
-const handleFileChange = async (event: Event) => {
-  const target = event.target as HTMLInputElement
+const handleFileChange = async (event) => {
+  const target = event.target
   const file = target.files?.[0]
 
   if (!file) return
@@ -102,7 +102,7 @@ const handleFileChange = async (event: Event) => {
       ElMessage.error('上传失败: ' + (result.message || '未知错误'))
       console.error('上传失败详细信息:', result)
     }
-  } catch (error: any) {
+  } catch (error) {
     const errorMessage = error.message || '上传失败，请重试'
     ElMessage.error(errorMessage)
     console.error('Upload error:', error)

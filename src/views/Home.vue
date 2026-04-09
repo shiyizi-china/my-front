@@ -83,7 +83,7 @@ const loadImageList = async () => {
       imageList.value = []
     }
   } catch (error) {
-    console.error("图片加载失败:", error)
+    console.error('图片加载失败:', error)
     imageList.value = []
   }
 }
@@ -130,7 +130,7 @@ const parseToken = (token) => {
       atob(base64)
         .split('')
         .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
+        .join(''),
     )
     return JSON.parse(jsonPayload)
   } catch (error) {
@@ -174,7 +174,7 @@ const loadArticles = async () => {
       articleList.value = []
     }
   } catch (e) {
-    console.error("文章加载失败:", e)
+    console.error('文章加载失败:', e)
     articleList.value = []
   }
 }
@@ -195,7 +195,7 @@ const publishArticle = async () => {
     const res = await addArticle({
       title: articleTitle.value,
       content: articleContent.value,
-      username: currentUserName.value // 使用获取到的真实姓名
+      username: currentUserName.value, // 使用获取到的真实姓名
     })
 
     // 后端直接返回创建的文章对象，而不是 { code, data } 包装

@@ -17,7 +17,7 @@ apiClient.interceptors.request.use(
     const token = authStore.token
     
     if (token) {
-      config.headers = config.headers || new axios.AxiosHeaders()
+      config.headers = config.headers || {}
       config.headers['token'] = token
     }
     

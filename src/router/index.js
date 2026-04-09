@@ -5,43 +5,43 @@ const routes = [
   {
     path: '/',
     // 根路径重定向到登录页
-    redirect: '/login'
+    redirect: '/login',
   },
   {
     path: '/home',
     name: 'Home',
     component: () => import('@/views/Home.vue'),
-    meta: { title: '首页', showNav: true, requiresAuth: true }
+    meta: { title: '首页', showNav: true, requiresAuth: true },
   },
   {
     path: '/deity',
     name: 'Deity',
     component: () => import('@/views/Deity.vue'),
-    meta: { title: '神来了', showNav: true, requiresAuth: true }
+    meta: { title: '神来了', showNav: true, requiresAuth: true },
   },
   {
     path: '/barrage',
     name: 'Barrage',
     component: () => import('@/views/Barrage.vue'),
-    meta: { title: '弹幕', showNav: true, requiresAuth: true }
+    meta: { title: '弹幕', showNav: true, requiresAuth: true },
   },
   {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/Login.vue'),
-    meta: { title: '登录', showNav: false }
+    meta: { title: '登录', showNav: false },
   },
   {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/Profile.vue'),
-    meta: { title: '个人中心', requiresAuth: true }
-  }
+    meta: { title: '个人中心', requiresAuth: true },
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
 })
 
 // 全局前置守卫：检查用户是否已登录
@@ -53,7 +53,7 @@ router.beforeEach((to) => {
     // 跳转到登录页面，并保存原始路径
     return {
       name: 'Login',
-      query: { redirect: to.fullPath }
+      query: { redirect: to.fullPath },
     }
   } else {
     // 允许访问

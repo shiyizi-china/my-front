@@ -69,7 +69,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
 import MemberFormDialog from '@/components/deity/MemberFormDialog.vue'
 import { 
   getDeityList, 

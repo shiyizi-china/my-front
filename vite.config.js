@@ -9,8 +9,8 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'src')
-    }
+      '@': path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'src'),
+    },
   },
   server: {
     port: 5179,
@@ -20,14 +20,14 @@ export default defineConfig({
       '^/(login|deitys|article|barrage|image|user)': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: (path) => path
+        rewrite: (path) => path,
       },
       // 添加OSS图片代理
       '/oss': {
         target: 'https://home-pageimage.oss-cn-guangzhou.aliyuncs.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/oss/, '')
-      }
-    }
-  }
+        rewrite: (path) => path.replace(/^\/oss/, ''),
+      },
+    },
+  },
 })

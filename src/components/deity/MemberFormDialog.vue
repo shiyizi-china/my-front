@@ -69,7 +69,6 @@
 
 <script setup>
 import { ref, watch, nextTick } from 'vue'
-import { ElMessage } from 'element-plus'
 
 // Props
 const props = defineProps({

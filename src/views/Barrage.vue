@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getBarrageList, sendBarrage } from '@/api/barrage.js'
 
@@ -113,7 +113,7 @@ const parseToken = (token) => {
       decodedBytes
         .split('')
         .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
+        .join(''),
     )
     
     const parsedData = JSON.parse(jsonPayload)
@@ -252,7 +252,6 @@ const formatTime = (time) => {
 // 鼠标hover暂停弹幕
 const pauseBarrage = (e) => {
   e.target.style.animationPlayState = 'paused'
-  e.target.style.transform = e.target.style.transform // 固定位置
 }
 
 // 鼠标离开恢复弹幕

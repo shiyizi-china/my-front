@@ -31,7 +31,7 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 /**
  * App.vue - 应用根组件
  * 
@@ -119,8 +119,8 @@ onMounted(async () => {
   }
   
   // 初始化鼠标轨迹特效
-  const canvas = document.getElementById('mouse-trail-canvas') as HTMLCanvasElement
-  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+  const canvas = document.getElementById('mouse-trail-canvas')
+  const ctx = canvas.getContext('2d')
   resizeCanvas(canvas)
   window.addEventListener('resize', () => resizeCanvas(canvas))
   document.addEventListener('mousemove', onMouseMove)
@@ -134,14 +134,14 @@ onMounted(async () => {
  * - 存储鼠标移动轨迹的坐标点
  * - 使用响应式 ref 包装以支持 Vue 的响应式系统
  */
-let trail = ref<Array<{ x: number; y: number }>>([])
+let trail = ref([])
 
 /**
  * 动画帧 ID
  * - 存储 requestAnimationFrame 的返回值
  * - 用于在组件卸载时取消动画
  */
-let animationId = ref<number | null>(null)
+let animationId = ref(null)
 
 /**
  * 上次鼠标移动时间戳
@@ -170,7 +170,7 @@ const TRAIL_MAX = 30
  * 
  * @param ctx Canvas 2D 渲染上下文
  */
-function drawTrail(ctx: CanvasRenderingContext2D) {
+function drawTrail(ctx) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
   if (trail.value.length < 2) return
   for (let i = 0; i < trail.value.length - 1; i++) {
@@ -197,7 +197,7 @@ function drawTrail(ctx: CanvasRenderingContext2D) {
  * 
  * @param ctx Canvas 2D 渲染上下文
  */
-function animate(ctx: CanvasRenderingContext2D) {
+function animate(ctx) {
   drawTrail(ctx)
   // 鼠标停止时逐渐消失
   if (Date.now() - lastMoveTime.value > 20) {
@@ -218,7 +218,7 @@ function animate(ctx: CanvasRenderingContext2D) {
  * 
  * @param canvas HTMLCanvasElement 元素
  */
-function resizeCanvas(canvas: HTMLCanvasElement) {
+function resizeCanvas(canvas) {
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
 }
@@ -233,7 +233,7 @@ function resizeCanvas(canvas: HTMLCanvasElement) {
  * 
  * @param e MouseEvent 鼠标事件对象
  */
-function onMouseMove(e: MouseEvent) {
+function onMouseMove(e) {
   lastMoveTime.value = Date.now()
   trail.value.unshift({ x: e.clientX, y: e.clientY })
   if (trail.value.length > TRAIL_MAX) trail.value.length = TRAIL_MAX
@@ -250,7 +250,7 @@ function onMouseMove(e: MouseEvent) {
  */
 onBeforeUnmount(() => {
   if (animationId.value) cancelAnimationFrame(animationId.value)
-  window.removeEventListener('resize', () => resizeCanvas(window as any as HTMLCanvasElement))
+  window.removeEventListener('resize', () => resizeCanvas(window))
   document.removeEventListener('mousemove', onMouseMove)
 })
 </script>

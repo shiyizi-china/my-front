@@ -18,17 +18,19 @@ import { ElMessage, ElLoading } from 'element-plus'
 const service = axios.create({
   baseURL: '',
   timeout: 10000,
-  withCredentials: false
+  withCredentials: false,
 })
 
 let loadingInstance = null
 
 // 获取 API 基础 URL
 function getBaseURL() {
-  if (!import.meta.env.VITE_API_BASE_URL) {
-    return '' // 开发环境使用相对路径
+  // 开发环境：留空，使用相对路径，由Vite代理处理
+  // 生产环境：使用环境变量或默认的线上地址
+  if (import.meta.env.PROD) {
+    return import.meta.env.VITE_API_BASE_URL || 'https://zesty-kindness-production-c0e9.up.railway.app'
   }
-  return import.meta.env.VITE_API_BASE_URL || 'https://zesty-kindness-production-c0e9.up.railway.app'
+  return '' // 开发环境使用相对路径
 }
 
 // 显示加载提示
@@ -36,7 +38,7 @@ function showLoading() {
   loadingInstance = ElLoading.service({
     lock: true,
     text: '加载中...',
-    background: 'rgba(0, 0, 0, 0.7)'
+    background: 'rgba(0, 0, 0, 0.7)',
   })
 }
 
@@ -67,7 +69,7 @@ service.interceptors.request.use(
     console.error('Request error:', error)
     ElMessage.error('请求发送失败，请检查网络连接')
     return Promise.reject(error)
-  }
+  },
 )
 
 // 响应拦截器
@@ -128,7 +130,7 @@ service.interceptors.response.use(
     }
     console.error('Response error:', error)
     return Promise.reject(error)
-  }
+  },
 )
 
 export default service

@@ -185,23 +185,20 @@ export const useAuthStore = defineStore('auth', () => {
       
       console.log('Login API response:', response)
       
-      if (response.code === 1) {
-        const userData = response.data?.data || response.data
-        console.log('Extracted userData:', userData)
-        const newToken = userData?.token
-        
-        if (!newToken) {
-          throw new Error('登录成功但未获取到有效token')
-        }
+      // 后端实际返回的是直接的用户数据对象，包含 token 字段
+      // 而不是 {code: 1, data: {...}} 的包装格式
+      if (response && response.token) {
+        const newToken = response.token
+        const userData = response
         
         token.value = newToken
         localStorage.setItem('token', newToken)
         // 设置用户信息 - 支持name字段
         userInfo.value = {
-          username: credentials.username,
-          name: userData?.name || userData?.username || credentials.username,
-          id: userData?.id,
-          avatar: userData?.avatar,
+          username: userData.username || credentials.username,
+          name: userData.name || userData.username || credentials.username,
+          id: userData.id,
+          avatar: userData.avatar,
         }
         console.log('Set userInfo:', userInfo.value)
         // 保存到localStorage
@@ -209,7 +206,7 @@ export const useAuthStore = defineStore('auth', () => {
         return { success: true, message: '登录成功' }
       } else {
         console.error('Login failed with response:', response)
-        return { success: false, message: response.msg || '登录失败' }
+        return { success: false, message: '用户名或密码错误' }
       }
     } catch (error) {
       console.error('Login error:', error)
