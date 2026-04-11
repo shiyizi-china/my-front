@@ -137,7 +137,7 @@ const handleAddMember = async (formData) => {
   try {
     const json = await addDeity(formData)
     // 后端直接返回创建的对象，而不是 { code, data } 包装
-    if (json && json.id) {
+    if (json.code === 1 || json.code === 200 || json.success) {
       ElMessage.success('新增成功')
       addDialogVisible.value = false
       await fetchMemberList()
@@ -155,14 +155,14 @@ const handleAddMember = async (formData) => {
  */
 const handleUpdateMember = async (formData) => {
   try {
-    const json = await updateDeity(formData)
+    const res = await updateDeity(formData)
     // 后端直接返回更新的对象，而不是 { code, data } 包装
-    if (json && json.id) {
+    if (res.code === 1 || res.code === 200 || res.success) {
       ElMessage.success('编辑成功')
       editDialogVisible.value = false
       await fetchMemberList()
     } else {
-      ElMessage.error(json?.msg || '编辑失败')
+      ElMessage.error(res?.msg || '编辑失败')
     }
   } catch (e) {
     console.error('更新成员失败:', e)
@@ -187,7 +187,7 @@ const handleDeleteMember = async (member) => {
     
     const json = await deleteDeity(member.id)
     // 后端可能直接返回成功消息或空对象，检查是否有 msg 或其他字段
-    if (json && (json.msg || json.success || typeof json === 'object')) {
+    if (json.code === 1 || json.code === 200 || json.success) {
       ElMessage.success('删除成功')
       await fetchMemberList()
     } else {

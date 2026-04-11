@@ -81,8 +81,10 @@ service.interceptors.response.use(
     // 这里假设如果存在 code 且不为成功状态则报错，否则直接返回数据
     // 注意：原 fetch 版本并未强制检查 code，此处根据提供的 axios 参考方案保留了 code 检查逻辑
     // 如果您的后端直接返回数据而不包装 code，请调整此逻辑直接 return res
-    if (res.code === 1 || res.code === 200) {
-      return res.data
+    const successCodes = [0, 1, 200]
+
+    if (successCodes.includes(res.code)) {
+      return res   // 返回完整响应体 { code, msg, data }
     } else if (res.code === 401) {
       ElMessage.error('登录已过期，请重新登录')
       window.location.href = '/login'
