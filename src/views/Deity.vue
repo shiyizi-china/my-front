@@ -57,7 +57,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import MemberFormDialog from '@/components/deitys/MemberFormDialog.vue'
+import MemberFormDialog from '@/components/deity/MemberFormDialog.vue'
 import { getDeityList, addDeity, updateDeity, deleteDeity } from '../api/deity'
 
 // 状态管理
