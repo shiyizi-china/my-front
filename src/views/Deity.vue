@@ -2,18 +2,14 @@
   <div class="deity-container">
     <!-- 操作区域 -->
     <div class="operation-area">
-      <button class="operation-area"
-        type="success" 
-        icon="Plus" 
-        @click="handleOpenAddDialog"
-      >
-       防误删小按钮
+      <button class="operation-area" type="success" icon="Plus" @click="handleOpenAddDialog">
+        防误删小按钮
       </button>
     </div>
 
     <!-- 数据表格 -->
-    <el-table 
-      :data="tableData" 
+    <el-table
+      :data="tableData"
       style="width: 100%"
       v-loading="loading"
       element-loading-text="加载中..."
@@ -30,18 +26,10 @@
       <el-table-column prop="phone" label="手机号" align="center" />
       <el-table-column label="操作" align="center" width="160">
         <template #default="scope">
-          <el-button 
-            type="primary" 
-            size="small" 
-            @click="handleOpenEditDialog(scope.row)"
-          >
+          <el-button type="primary" size="small" @click="handleOpenEditDialog(scope.row)">
             编辑
           </el-button>
-          <el-button 
-            type="danger" 
-            size="small" 
-            @click="handleDeleteMember(scope.row)"
-          >
+          <el-button type="danger" size="small" @click="handleDeleteMember(scope.row)">
             删除
           </el-button>
         </template>
@@ -70,12 +58,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import MemberFormDialog from '@/components/deitys/MemberFormDialog.vue'
-import { 
-  getDeityList, 
-  addDeity, 
-  updateDeity, 
-  deleteDeity, 
-} from '../api/deitys'
+import { getDeityList, addDeity, updateDeity, deleteDeity } from '../api/deity'
 
 // 状态管理
 const tableData = ref([])
@@ -175,16 +158,12 @@ const handleUpdateMember = async (formData) => {
  */
 const handleDeleteMember = async (member) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除成员 "${member.name}" 吗？`,
-      '删除确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      },
-    )
-    
+    await ElMessageBox.confirm(`确定要删除成员 "${member.name}" 吗？`, '删除确认', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+
     const json = await deleteDeity(member.id)
     // 后端可能直接返回成功消息或空对象，检查是否有 msg 或其他字段
     if (json.code === 1 || json.code === 200 || json.success) {
