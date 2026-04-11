@@ -14,7 +14,7 @@ const routes = [
     meta: { title: '首页', showNav: true, requiresAuth: true },
   },
   {
-    path: '/deity',
+    path: '/deitys',
     name: 'Deity',
     component: () => import('@/views/Deity.vue'),
     meta: { title: '神来了', showNav: true, requiresAuth: true },

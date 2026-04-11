@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 // 创建 axios 实例
 const apiClient = axios.create({
   baseURL: '',
-  timeout: 60000 // 请求超时时间
+  timeout: 60000,// 请求超时时间
 })
 
 // 请求拦截器
@@ -26,7 +26,7 @@ apiClient.interceptors.request.use(
   (error) => {
     console.error('Request interceptor error:', error)
     return Promise.reject(error)
-  }
+  },
 )
 
 // 响应拦截器
@@ -40,12 +40,14 @@ apiClient.interceptors.response.use(
       const status = error.response.status
       switch (status) {
         case 401:
-          errorMessage = '未授权，请重新登录'
-          // 清除token并跳转到登录页
-          const authStore = useAuthStore()
-          authStore.logout()
-          window.location.href = '/login'
-          break
+          {
+            errorMessage = '未授权，请重新登录'
+            // 清除token并跳转到登录页
+            const authStore = useAuthStore()
+            authStore.logout()
+            window.location.href = '/login'
+            break
+          }
         case 403:
           errorMessage = '拒绝访问'
           break
@@ -63,7 +65,7 @@ apiClient.interceptors.response.use(
     }
     
     return Promise.reject(new Error(errorMessage))
-  }
+  },
 )
 
 export default apiClient
