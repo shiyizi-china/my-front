@@ -185,32 +185,48 @@ export const useAuthStore = defineStore('auth', () => {
       
       console.log('Login API response:', response)
       
-      // 后端实际返回的是直接的用户数据对象，包含 token 字段
-      // 而不是 {code: 1, data: {...}} 的包装格式
-      if (response && response.token) {
-        const newToken = response.token
-        const userData = response
+      // 兼容两种可能的响应结构
+      let tokenValue, userData
+      
+      // 情况1：后端返回包装结构 { code: 1, data: {...}, msg: 'success' }
+      if (response.code === 1 && response.data) {
+        tokenValue = response.data.token
+        userData = response.data
+      }
+      // 情况2：后端直接返回用户数据 { token: '...', username: '...', id: 2 }
+      else if (response.token) {
+        tokenValue = response.token
+        userData = response
+      }
+      // 情况3：其他成功码，比如 code 为 0 或 200
+      else if ((response.code === 0 || response.code === 200) && response.data) {
+        tokenValue = response.data.token
+        userData = response.data
+      }
+      
+      if (tokenValue) {
+        token.value = tokenValue
+        localStorage.setItem('token', tokenValue)
         
-        token.value = newToken
-        localStorage.setItem('token', newToken)
-        // 设置用户信息 - 支持name字段
+        // 构建用户信息对象
         userInfo.value = {
           username: userData.username || credentials.username,
           name: userData.name || userData.username || credentials.username,
           id: userData.id,
           avatar: userData.avatar,
         }
+        
         console.log('Set userInfo:', userInfo.value)
-        // 保存到localStorage
         localStorage.setItem('user-info', JSON.stringify(userInfo.value))
-        return { success: true, message: '登录成功' }
+        
+        return { success: true, message: response.msg || '登录成功' }
       } else {
-        console.error('Login failed with response:', response)
-        return { success: false, message: '用户名或密码错误' }
+        console.error('Login failed: no token in response', response)
+        return { success: false, message: response.msg || '用户名或密码错误' }
       }
     } catch (error) {
       console.error('Login error:', error)
-      return { success: false, message: '登录请求失败' }
+      return { success: false, message: error.message || '登录请求失败' }
     } finally {
       isLoading.value = false
     }

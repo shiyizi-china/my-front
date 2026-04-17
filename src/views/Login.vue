@@ -201,9 +201,12 @@ const handleLogin = async () => {
   try {
     // 设置加载状态，防止重复提交
     loading.value = true
+
+
     
     // 调用认证 Store 的登录方法
     const result = await authStore.login(form.value)
+
     
     if (result.success) {
       // 登录成功：显示成功消息

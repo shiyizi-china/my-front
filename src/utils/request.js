@@ -1,6 +1,6 @@
 /**
  * src/utils/request.js - 基于 axios 的通用请求封装
- * 
+ *
  * 功能特性：
  * - 统一的 HTTP 请求接口
  * - 自动 Token 注入（Bearer 认证）
@@ -28,7 +28,9 @@ function getBaseURL() {
   // 开发环境：留空，使用相对路径，由Vite代理处理
   // 生产环境：使用环境变量或默认的线上地址
   if (import.meta.env.PROD) {
-    return import.meta.env.VITE_API_BASE_URL || 'https://zesty-kindness-production-c0e9.up.railway.app'
+    return (
+      import.meta.env.VITE_API_BASE_URL || 'https://zesty-kindness-production-c0e9.up.railway.app'
+    )
   }
   return '' // 开发环境使用相对路径
 }
@@ -52,7 +54,7 @@ function hideLoading() {
 
 // 请求拦截器
 service.interceptors.request.use(
-  config => {
+  (config) => {
     config.baseURL = getBaseURL()
     if (config.showLoading !== false) {
       showLoading()
@@ -64,7 +66,7 @@ service.interceptors.request.use(
     }
     return config
   },
-  error => {
+  (error) => {
     hideLoading()
     console.error('Request error:', error)
     ElMessage.error('请求发送失败，请检查网络连接')
@@ -74,7 +76,7 @@ service.interceptors.request.use(
 
 // 响应拦截器
 service.interceptors.response.use(
-  response => {
+  (response) => {
     hideLoading()
     const res = response.data
     // 根据项目规范，如果后端返回了特定的 code 结构，可以在这里处理
@@ -84,7 +86,7 @@ service.interceptors.response.use(
     const successCodes = [0, 1, 200]
 
     if (successCodes.includes(res.code)) {
-      return res   // 返回完整响应体 { code, msg, data }
+      return res // 返回完整响应体 { code, msg, data }
     } else if (res.code === 401) {
       ElMessage.error('登录已过期，请重新登录')
       window.location.href = '/login'
@@ -93,13 +95,13 @@ service.interceptors.response.use(
       // 如果没有 code 字段，或者 code 表示成功但未命中上面条件，可能需要直接返回 res
       // 这里为了兼容性，如果 res 没有 code 字段，通常视为直接返回业务数据
       if (res.code === undefined) {
-         return res
+        return res
       }
       ElMessage.error(res.msg || '请求失败')
       return Promise.reject(new Error(res.msg || '请求失败'))
     }
   },
-  error => {
+  (error) => {
     hideLoading()
     if (error.response) {
       const status = error.response.status
